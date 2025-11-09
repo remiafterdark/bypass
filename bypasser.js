@@ -5,24 +5,11 @@
     const debug = true; // enable debug logs (console)
 
     let selectedDelay = 0;
-    let currentLanguage = localStorage.getItem('lang') || 'vi'; // default language: vi/en
+    const currentLanguage = 'en'; // Force English as the only language
 
     // Translations (bypassSuccess simplified — no {time})
     const translations = {
-        vi: {
-            title: "Remi's Bypasser", // Updated Title
-            pleaseSolveCaptcha: "Vui lòng giải CAPTCHA để tiếp tục",
-            captchaSuccess: "CAPTCHA đã thành công",
-            redirectingToWork: "Đang qua Work.ink...",
-            bypassSuccessCopy: "Bypass thành công, đã Copy Key (bấm 'Cho Phép' nếu có)",
-            waitingCaptcha: "Đang chờ CAPTCHA...",
-            pleaseReload: "Vui lòng tải lại trang...(workink lỗi)",
-            bypassSuccess: "Bypass thành công",
-            backToCheckpoint: "Đang về lại Checkpoint...",
-            captchaSuccessBypassing: "CAPTCHA đã thành công, đang bypass...",
-            version: "Phiên bản v1.6.3.0",
-            madeBy: "Được tạo bởi DyRian và elfuhh (dựa trên IHaxU)"
-        },
+        // Only English translation needed now
         en: {
             title: "Remi's Bypasser", // Updated Title
             pleaseSolveCaptcha: "Please solve the CAPTCHA to continue",
@@ -35,11 +22,12 @@
             backToCheckpoint: "Returning to checkpoint...",
             captchaSuccessBypassing: "CAPTCHA solved successfully, bypassing...",
             version: "Version v1.6.3.0",
-            madeBy: "Made by DyRian and elfuhh (based on IHaxU)"
+            madeBy: "Made by remiafterdark" // Updated credit
         }
     };
 
     function t(key, replacements = {}) {
+        // No need to check currentLanguage, it's always 'en'
         if (!translations[currentLanguage] || !translations[currentLanguage][key]) return key;
         let text = translations[currentLanguage][key];
         Object.keys(replacements).forEach(placeholder => {
@@ -63,7 +51,7 @@
             this.statusDot = null;
             this.versionEl = null;
             this.creditEl = null;
-            this.langBtns = [];
+            // this.langBtns = []; // No longer needed
             this.currentMessageKey = null;
             this.currentType = 'info';
             this.currentReplacements = {};
@@ -91,7 +79,6 @@
             this.shadow = this.container.attachShadow({ mode: 'closed' });
 
             const style = document.createElement('style');
-            // --- UPDATED CSS FOR SPOTIFY THEME ---
             style.textContent = `
                 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -226,41 +213,7 @@
                     opacity: 0;
                 }
 
-                .language-section {
-                    padding: 16px 20px;
-                    border-bottom: 1px solid ${SPOT_DARK_GREY};
-                }
-
-                .lang-toggle {
-                    display: flex;
-                    gap: 10px;
-                }
-
-                .lang-btn {
-                    flex: 1;
-                    background: ${SPOT_DARK_GREY};
-                    border: 2px solid ${SPOT_DARK_GREY};
-                    color: #fff;
-                    padding: 8px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 13px;
-                    transition: all 0.2s;
-                    text-transform: uppercase;
-                }
-
-                .lang-btn:hover {
-                    background: ${SPOT_DARK_GREY};
-                    border-color: #555;
-                }
-
-                .lang-btn.active {
-                    background: ${SPOT_GREEN};
-                    border-color: ${SPOT_GREEN};
-                    color: ${SPOT_BLACK};
-                    box-shadow: 0 2px 10px rgba(29, 185, 84, 0.3);
-                }
+                /* Removed .language-section and .lang-toggle styles */
 
                 .info-section {
                     padding: 16px 20px;
@@ -288,23 +241,7 @@
                     font-weight: 700;
                 }
 
-                .links {
-                    display: flex;
-                    justify-content: center;
-                    gap: 16px;
-                    font-size: 11px;
-                }
-
-                .links a {
-                    color: ${SPOT_GREEN};
-                    text-decoration: none;
-                    transition: all 0.2s;
-                }
-
-                .links a:hover {
-                    color: ${SPOT_LIGHT_GREEN};
-                    text-decoration: underline;
-                }
+                /* Removed .links and .links a styles */
 
                 /* --- Slider styles --- */
                 .slider-container {
@@ -458,22 +395,12 @@
                         </div>
 
                         <div class="panel-body" id="panel-body">
-                            <div class="language-section">
-                                <div class="lang-toggle">
-                                    <button class="lang-btn ${currentLanguage === 'vi' ? 'active' : ''}" data-lang="vi">Tiếng Việt</button>
-                                    <button class="lang-btn ${currentLanguage === 'en' ? 'active' : ''}" data-lang="en">English</button>
-                                </div>
-                            </div>
                             <div class="info-section">
                                 <div class="version" id="version">${t('version')}</div>
                                 <div class="credit" id="credit">
                                     ${t('madeBy')}
                                 </div>
-                                <div class="links">
-                                    <a href="https://www.youtube.com/@dyydeptry" target="_blank">YouTube</a>
-                                    <a href="https://discord.gg/DWyEfeBCzY" target="_blank">Discord</a>
                                 </div>
-                            </div>
                         </div>
 
                     </div>
@@ -489,7 +416,7 @@
             this.statusDot = this.shadow.querySelector('#status-dot');
             this.versionEl = this.shadow.querySelector('#version');
             this.creditEl = this.shadow.querySelector('#credit');
-            this.langBtns = Array.from(this.shadow.querySelectorAll('.lang-btn'));
+            // this.langBtns = Array.from(this.shadow.querySelectorAll('.lang-btn')); // No longer needed
             this.body = this.shadow.querySelector('#panel-body');
             this.minimizeBtn = this.shadow.querySelector('#minimize-btn');
 
@@ -503,12 +430,8 @@
         }
 
         setupEventListeners() {
-            this.langBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    currentLanguage = btn.dataset.lang;
-                    this.updateLanguage();
-                });
-            });
+            // No language button event listeners needed
+            // this.langBtns.forEach(btn => { ... });
 
             this.minimizeBtn.addEventListener('click', () => {
                 this.isMinimized = !this.isMinimized;
@@ -534,12 +457,12 @@
             });
         }
 
+        // Simplified updateLanguage, as it's always English now
         updateLanguage() {
-            localStorage.setItem('lang', currentLanguage);
+            // localStorage.setItem('lang', currentLanguage); // No longer saving language preference
 
-            this.langBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.lang === currentLanguage);
-            });
+            // No language button active state to update
+            // this.langBtns.forEach(btn => { ... });
 
             const titleEl = this.shadow.querySelector('.title');
             if (titleEl) titleEl.textContent = t('title');
@@ -547,7 +470,6 @@
             if (this.creditEl) this.creditEl.textContent = t('madeBy');
 
             if (this.currentMessageKey) {
-                // re-show current message (localized if applicable)
                 this.show(this.currentMessageKey, this.currentType, this.currentReplacements);
             }
         }
@@ -561,6 +483,7 @@
             this.currentReplacements = replacements;
 
             let message = '';
+            // Only checking 'en' translations
             if (translations[currentLanguage] && translations[currentLanguage][messageKeyOrTitle]) {
                 message = t(messageKeyOrTitle, replacements);
                 if (typeof typeOrSubtitle === 'string' && !['info','success','warning','error'].includes(typeOrSubtitle) && typeOrSubtitle.length > 0) {
@@ -791,14 +714,14 @@
                         if (debug) console.error('[Debug] Error spoofing social', e);
                     }
                 }
-                
+
                 // Allow user to manually start redirect after all socials are spoofed
                 socialCheckInProgress = false;
                 if (panel) panel.showCaptchaComplete();
                 if (debug) console.log('[Debug] Socials spoofing finished. Panel updated for manual redirect.');
                 return true;
             }
-            
+
             return false;
         }
 
@@ -807,17 +730,17 @@
             return function (a, b) {
                 if (debug) console.log('[Debug] onLinkInfo called:', a, b);
                 linkInfoA = b;
-                
+
                 // Check if CAPTCHA is done (based on original script's logic intent)
                 if (b && b.captchaDone) {
                     if (!bypassTriggered) {
                         bypassTriggered = true;
                         if (debug) console.log('[Debug] CaptchaDone detected, attempting bypass...');
-                        
+
                         // Check for socials first
                         if (!checkAndHandleSocials()) {
                             // If no socials, proceed immediately to show slider for manual redirect
-                            if (panel) panel.showCaptchaComplete(); 
+                            if (panel) panel.showCaptchaComplete();
                             if (debug) console.log('[Debug] No socials detected. Panel updated for manual redirect.');
                         }
                     }
@@ -831,7 +754,7 @@
         function hookOnLinkDestination(target, originalFn) {
             return function (a, b) {
                 if (debug) console.log('[Debug] onLinkDestination called:', a, b);
-                
+
                 if (b && b.destination) {
                     // Set up the start button callback to redirect after delay
                     if (panel && !destinationReceived) {
@@ -847,11 +770,11 @@
 
                         // If CAPTCHA was already done, show the slider now.
                         if (linkInfoA && linkInfoA.captchaDone && !socialCheckInProgress) {
-                            panel.showCaptchaComplete(); 
+                            panel.showCaptchaComplete();
                         }
                     }
                 }
-                
+
                 return originalFn.apply(this, arguments);
             };
         }
@@ -869,21 +792,21 @@
                 if (typeof window[prop] === 'object' && window[prop] !== null && typeof window[prop].start === 'function' && typeof window[prop].stop === 'function') {
                     sessionControllerA = window[prop];
                     if (debug) console.log('[Debug] Found sessionControllerA:', sessionControllerA);
-                    
+
                     const liResult = resolveName(sessionControllerA, map.onLI);
                     if (liResult.fn) {
                         onLinkInfoA = liResult.fn;
                         sessionControllerA[liResult.name] = hookOnLinkInfo(sessionControllerA, onLinkInfoA);
                         if (debug) console.log('[Debug] Hooked onLinkInfo');
                     }
-                    
+
                     const ldResult = resolveName(sessionControllerA, map.onLD);
                     if (ldResult.fn) {
                         onLinkDestinationA = ldResult.fn;
                         sessionControllerA[ldResult.name] = hookOnLinkDestination(sessionControllerA, onLinkDestinationA);
                         if (debug) console.log('[Debug] Hooked onLinkDestination');
                     }
-                    
+
                     const sendResult = resolveWriteFunction(sessionControllerA);
                     if (sendResult.fn) {
                         sendMessageA = sendResult.fn;
@@ -901,7 +824,7 @@
         });
 
         observer.observe(document.documentElement, { childList: true, subtree: true });
-        
+
         // Initial check just in case
         for (const prop in window) {
             if (typeof window[prop] === 'object' && window[prop] !== null && typeof window[prop].start === 'function' && typeof window[prop].stop === 'function') {
@@ -918,7 +841,7 @@
                     sessionControllerA[ldResult.name] = hookOnLinkDestination(sessionControllerA, onLinkDestinationA);
 
                     sendMessageA = sendResult.fn;
-                    
+
                     injectionSuccess = true;
                     if (debug) console.log('[Debug] Immediate Injection complete.');
                     break;
